@@ -1,0 +1,67 @@
+{
+  "results": [
+    {
+      "id": 1,
+      "title": "Vitamin A",
+      "image": "assets/restaurants/vitamina2.jpg",
+      "imageType": "jpg"
+    },
+    {
+      "id": 2,
+      "title": "Vitamin B Complex",
+      "image": "assets/restaurants/vitaminb.jpg",
+      "imageType": "jpg"
+    },
+    {
+      "id": 3,
+      "title": "Vitamin B1",
+      "image": "assets/restaurants/vitaminb1.png",
+      "imageType": "png"
+    },
+    {
+      "id": 4,
+      "title": "Vitamin B12",
+      "image": "assets/restaurants/vitaminb12.jpg",
+      "imageType": "jpg"
+    },
+    {
+      "id": 5,
+      "title": "Vitamin C",
+      "image": "assets/restaurants/vitaminc.jpg",
+      "imageType": "jpg"
+    },
+    {
+      "id": 6,
+      "title": "Vitamin D",
+      "image": "assets/restaurants/vitamind.jpg",
+      "imageType": "jpg"
+    },
+    {
+      "id": 7,
+      "title": "Vitamin E",
+      "image": "assets/restaurants/vitamine.jpg",
+      "imageType": "jpg"
+    },
+    {
+      "id": 8,
+      "title": "Vitamin D3",
+      "image": "assets/restaurants/vitamind3.jpg",
+      "imageType": "jpg"
+    },
+    {
+      "id": 9,
+      "title": "Omega 3",
+      "image": "assets/restaurants/vitamine2.jpg",
+      "imageType": "jpg"
+    },
+    {
+      "id": 10,
+      "title": "Collagen",
+      "image": "assets/restaurants/vitamine4.jpg",
+      "imageType": "jpg"
+    }
+  ],
+  "offset": 0,
+  "number": 10,
+  "totalResults": 10
+}
