@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'models.dart';
+import 'recipe.dart';
+import 'youtube_video.dart';
 
 class BookmarkManager extends ChangeNotifier {
-  static const String _bookmarkKey = 'vitaminBookmarks';
-  static const String _videoKey = 'videoBookmarks';
+  final String? userId;
+  
+  String get _bookmarkKey => userId != null ? 'vitaminBookmarks_$userId' : 'vitaminBookmarks_guest';
+  String get _videoKey => userId != null ? 'videoBookmarks_$userId' : 'videoBookmarks_guest';
   
   List<Recipe> _bookmarks = [];
   List<YoutubeVideo> _videoBookmarks = [];
@@ -15,7 +18,7 @@ class BookmarkManager extends ChangeNotifier {
   List<YoutubeVideo> get videoBookmarks => _videoBookmarks;
   bool get isLoading => _isLoading;
 
-  BookmarkManager() {
+  BookmarkManager(this.userId) {
     _load();
   }
 

@@ -26,7 +26,9 @@ final userDaoProvider = ChangeNotifierProvider<UserDao>((ref) {
 });
 
 final bookmarkProvider = ChangeNotifierProvider<BookmarkManager>((ref) {
-  return BookmarkManager();
+  final user = ref.watch(userDaoProvider);
+  final uid = user.userId();
+  return BookmarkManager(uid);
 });
 
 final messageDaoProvider = Provider<MessageDao>((ref) {
