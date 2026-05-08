@@ -46,7 +46,8 @@ class _AccountPageState extends ConsumerState<AccountPage> {
     );
   }
 
-  Widget _buildFavoritesSection(List<Recipe> favorites, BookmarkManager manager) {
+  Widget _buildFavoritesSection(List<Recipe> favorites, BookmarkManager
+  manager) {
     if (favorites.isEmpty) {
       return const Padding(
         padding: EdgeInsets.all(16.0),
@@ -88,7 +89,8 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                   ),
                 ),
                 title: Text(item.title),
-                subtitle: Text(item.brand, style: const TextStyle(fontSize: 12)),
+                subtitle: Text(item.brand, style: const TextStyle(fontSize:
+                12)),
                 trailing: IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
@@ -160,7 +162,8 @@ class _AccountPageState extends ConsumerState<AccountPage> {
           ),
           child: const Text(
             'FitHerb Member',
-            style: TextStyle(color: Color(0xFF2E7D32), fontWeight: FontWeight.bold),
+            style: TextStyle(color: Color(0xFF2E7D32), fontWeight:
+            FontWeight.bold),
           ),
         ),
       ],

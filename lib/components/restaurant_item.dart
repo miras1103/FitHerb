@@ -99,7 +99,8 @@ class RestaurantItem extends StatelessWidget {
         ),
         child: const Text(
           'Add',
-          style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, color:
+          Colors.white),
         ),
       ),
     );

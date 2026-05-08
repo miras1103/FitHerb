@@ -63,7 +63,8 @@ class UserDao extends ChangeNotifier {
       log('Login Error Code: ${e.code}');
       
       // Map security codes to user-friendly messages
-      if (e.code == 'invalid-credential' || e.code == 'wrong-password' || e.code == 'user-not-found') {
+      if (e.code == 'invalid-credential' || e.code == 'wrong-password'
+          || e.code == 'user-not-found') {
         return 'Incorrect email or password.';
       }
       
