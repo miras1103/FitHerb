@@ -38,5 +38,10 @@ A modern Flutter project focused on health, vitamins, and wellness.
 *   **Mocking**: Integrated `Mockito` to test `DBRepository` logic in isolation without a real database.
 *   **Architecture**: Refactored code to use Dependency Injection for better stability and testability.
 
-### 5. Technical Stability
+### 5. Widget & Golden Testing (Chapter 18)
+*   **Component Testing**: Implemented widget tests for `IngredientCard` to verify UI structure and user interactions (tapping/checking).
+*   **Golden Tests**: Added visual regression tests using `golden_toolkit` to ensure consistent look and feel across light and dark themes.
+*   **Verification**: Verified state changes and callback triggers (e.g., `onChecked`) within UI components.
+
+### 6. Technical Stability
 *   **Windows Build Fix**: Resolved critical C++ compilation issues encountered during Windows deployment by aligning Firebase plugin versions.
