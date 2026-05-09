@@ -19,6 +19,15 @@ This project serves as a **Midterm** submission for the "Cross-platform mobile d
 
 ---
 
+## Key Functional Modules
+
+*   **E-commerce & Shopping Cart**: Dynamic cart management featuring real-time quantity controls (`CartControl`) and a streamlined multi-step checkout process (`CheckoutPage`).
+*   **Community Social Feed**: An interactive health-focused social module where users can share tips, posts, and wellness advice (`PostSection`).
+*   **Discovery & Marketplace**: Sophisticated browsing for health stores and vitamins using adaptive layouts and landscape cards for optimal viewing across devices.
+*   **Real-time Interaction**: A global messaging system and instant UI updates for bookmarks and user-generated content.
+
+---
+
 ## Technical Implementation Journey (Ch 10–18)
 
 ### Chapter 10: Handling Shared Preferences
@@ -43,7 +52,7 @@ This project serves as a **Midterm** submission for the "Cross-platform mobile d
 
 ### Chapter 15: Saving Data Locally (Drift)
 *   Integrated the **Drift** library to provide a permanent local SQLite database with automated code generation (`.g.dart`).
-*   Implemented **DAOs (Data Access Objects)** and handled **Schema Versioning** to manage structured storage with full offline support.
+*   Implemented **DAOs (Data Access Objects)** and handled **Schema Versioning** to manage structured storage of user data with full offline support.
 
 ### Chapter 16: Firebase Cloud Firestore
 *   Configured **Firebase Auth** for secure user registration, login, and real-time session management.
@@ -63,6 +72,18 @@ This project serves as a **Midterm** submission for the "Cross-platform mobile d
 *   **Windows Desktop**: Resolved critical C++ compilation issues (`encodable_value.h`) to ensure stable Firebase and Drift performance on desktop.
 *   **Android**: Fully optimized with **MultiDex** support and native performance tweaks for mobile devices.
 *   **Clean Architecture**: Maintained a clear separation of concerns to ensure the codebase is scalable, maintainable, and testable.
+
+---
+
+## Built With
+
+*   [Flutter](https://flutter.dev) - Framework
+*   [Riverpod](https://riverpod.dev) - State Management & DI
+*   [Firebase](https://firebase.google.com) - Auth & Cloud Firestore
+*   [Drift](https://drift.simonbinder.eu) - Local SQLite Database
+*   [Chopper](https://pub.dev/packages/chopper) - Networking layer
+*   [GoRouter](https://pub.dev/packages/go_router) - Navigation
+*   [Freezed](https://pub.dev/packages/freezed) - Immutable modeling
 
 ---
 
