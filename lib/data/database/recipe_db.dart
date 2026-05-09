@@ -121,9 +121,9 @@ Insertable<DbRecipeData> recipeToInsertableDbRecipe(Recipe recipe) {
 Ingredient dbIngredientToIngredient(DbIngredientData ingredient) {
   return Ingredient(
     id: ingredient.id,
-    recipeId: ingredient.recipeId.toString(),
+    recipeId: ingredient.recipeId,
     name: ingredient.name,
-    weight: ingredient.amount,
+    amount: ingredient.amount,
   );
 }
 
@@ -131,8 +131,8 @@ DbIngredientCompanion ingredientToInsertableDbIngredient(
   Ingredient ingredient,
 ) {
   return DbIngredientCompanion.insert(
-    recipeId: int.tryParse(ingredient.recipeId ?? '0') ?? 0,
+    recipeId: ingredient.recipeId ?? 0,
     name: ingredient.name ?? '',
-    amount: ingredient.weight ?? 0.0,
+    amount: ingredient.amount ?? 0.0,
   );
 }

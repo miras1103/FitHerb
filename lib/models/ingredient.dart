@@ -1,15 +1,22 @@
 class Ingredient {
   final int? id;
-  final String? recipeId;
+  final int? recipeId;
   final String? name;
-  final double? weight;
+  final double? amount;
 
-  Ingredient({
+  const Ingredient({
     this.id,
     this.recipeId,
     this.name,
-    this.weight,
+    this.amount,
   });
+
+  factory Ingredient.fromJson(Map<String, dynamic> json) => Ingredient(
+        id: json['id'] as int?,
+        recipeId: json['recipeId'] as int?,
+        name: json['name'] as String?,
+        amount: (json['amount'] as num?)?.toDouble(),
+      );
 
   @override
   bool operator ==(Object other) =>
@@ -19,23 +26,22 @@ class Ingredient {
           id == other.id &&
           recipeId == other.recipeId &&
           name == other.name &&
-          weight == other.weight;
+          amount == other.amount;
 
   @override
-  int get hashCode => id.hashCode ^ recipeId.hashCode
-  ^ name.hashCode ^ weight.hashCode;
+  int get hashCode => id.hashCode ^ recipeId.hashCode ^ name.hashCode ^ amount.hashCode;
 
   Ingredient copyWith({
     int? id,
-    String? recipeId,
+    int? recipeId,
     String? name,
-    double? weight,
+    double? amount,
   }) {
     return Ingredient(
       id: id ?? this.id,
       recipeId: recipeId ?? this.recipeId,
       name: name ?? this.name,
-      weight: weight ?? this.weight,
+      amount: amount ?? this.amount,
     );
   }
 }

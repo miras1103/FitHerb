@@ -91,8 +91,9 @@ class MemoryRepository extends Notifier<CurrentRecipeData>
 
   @override
   void deleteRecipeIngredients(String recipeId) {
+    final id = int.tryParse(recipeId);
     final updatedList = [...state.currentIngredients];
-    updatedList.removeWhere((ingredient) => ingredient.recipeId == recipeId);
+    updatedList.removeWhere((ingredient) => ingredient.recipeId == id);
     state = state.copyWith(currentIngredients: updatedList);
     _ingredientStreamController?.sink.add(state.currentIngredients);
   }

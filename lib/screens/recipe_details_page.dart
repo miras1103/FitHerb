@@ -44,9 +44,9 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
         final text = _currentDetails!['ingredients_text'] as String? ?? '';
         if (text.isNotEmpty) {
           ingredients.add(Ingredient(
-            recipeId: widget.recipe.id,
+            recipeId: int.tryParse(widget.recipe.id),
             name: text,
-            weight: 0,
+            amount: 0.0,
           ));
         }
       }

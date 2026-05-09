@@ -6,23 +6,26 @@ import '../../models/models.dart';
 import '../../models/ingredient.dart';
 import 'repository.dart';
 
-class DBRepository extends Notifier<CurrentRecipeData> 
-    implements Repository {
-  late RecipeDatabase recipeDatabase;
-  late RecipeDao _recipeDao;
-  late IngredientDao _ingredientDao;
+class DBRepository extends Notifier<CurrentRecipeData> implements Repository {
+  final RecipeDatabase recipeDatabase;
+  final RecipeDao _recipeDao;
+  final IngredientDao _ingredientDao;
+
+  // Основной конструктор вызывает внутренний для надежной инициализации полей
+  DBRepository({RecipeDatabase? recipeDatabase})
+      : this._internal(recipeDatabase ?? RecipeDatabase());
+
+  DBRepository._internal(RecipeDatabase db)
+      : recipeDatabase = db,
+        _recipeDao = db.recipeDao,
+        _ingredientDao = db.ingredientDao;
 
   @override
   CurrentRecipeData build() {
-    // Инициализируем БД здесь, чтобы она была доступна сразу
-    recipeDatabase = RecipeDatabase();
-    _recipeDao = recipeDatabase.recipeDao;
-    _ingredientDao = recipeDatabase.ingredientDao;
     return const CurrentRecipeData();
   }
 
   Future<void> init() async {
-    // Загружаем начальные данные
     final recipes = await findAllRecipes();
     final dbIngs = await _ingredientDao.findAllIngredients();
     final ingredients = dbIngs.map(dbIngredientToIngredient).toList();
@@ -59,7 +62,9 @@ class DBRepository extends Notifier<CurrentRecipeData>
 
   @override
   Future<List<Ingredient>> findAllIngredients() {
-    return Future.value(state.currentIngredients);
+    return _ingredientDao.findAllIngredients().then((list) {
+      return list.map(dbIngredientToIngredient).toList();
+    });
   }
 
   Future<List<Ingredient>> findRecipeIngredients(String recipeId) {
@@ -77,7 +82,7 @@ class DBRepository extends Notifier<CurrentRecipeData>
     _recipeDao.insertRecipe(dbRecipe).then((_) {
       for (final ingredient in recipe.ingredients) {
         final dbIng = ingredientToInsertableDbIngredient(
-          ingredient.copyWith(recipeId: recipe.id),
+          ingredient.copyWith(recipeId: int.tryParse(recipe.id)),
         );
         _ingredientDao.insertIngredient(dbIng);
       }

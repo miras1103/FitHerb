@@ -12,3 +12,4 @@ export 'user_dao.dart';
 export 'message.dart';
 export 'message_dao.dart';
 export 'youtube_video.dart';
+export 'ingredient.dart';
