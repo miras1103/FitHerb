@@ -1,47 +1,82 @@
-# FitHerb (Yummy)
+# FitHerb
 
-A modern Flutter project focused on health, vitamins, and wellness.
+**FitHerb** is a modern wellness and health-focused mobile application developed with Flutter. It is designed to help users discover vitamins, supplements, and healthy lifestyle content while providing tools for social interaction and personalized data management.
 
-## Project Evolution & Core Changes
+This project serves as a **Midterm** submission for the "Cross-platform mobile development" course, demonstrating a full development lifecycle from UI/UX design to cloud integration and automated testing.
 
-1.  **Asset Refresh**: Updated assets for categories, restaurants, and food to align with the FitHerb brand.
-2.  **Code Refactoring**:
-    *   `restaurant.dart` -> `my_restaurant.dart`
-    *   `post.dart` -> `my_post.dart`
-    *   `food_category.dart` -> `my_food_category.dart`
-3.  **Web Support**: Updated `index.html` title to **FitHerb**.
-4.  **UI Localization**: Changed "Food near me" to "Vitamins" in `Restaurant_section.dart`.
+---
 
-## Midterm Feature Set
-5.  **Interactive Animations**: Implemented opacity animations in the login flow.
-6.  **Review System**: Customized the `buildReviewsSection` in `restaurant_page.dart`.
-7.  **Vitamin Database**: Expanded and refined the content in `vitamins.dart`.
+## Core Midterm Features & Customizations
 
-## Recent Advanced Improvements
+*   **Wellness & Vitamin Database**: A comprehensive library of wellness products and supplements with detailed nutritional insights, benefits, and usage guides.
+*   **Social Review System**: A customized feedback system allowing users to share and read real reviews for products and healthy-eating locations.
+*   **Visual Identity Update**:
+    *   **Professional Branding**: Migrated the entire theme to a sleek, health-focused **Material Green** palette.
+    *   **Logo Enhancement**: Increased brand impact with a high-resolution **250x250** brand logo.
+    *   **Modern UI Components**: Redesigned authentication buttons into compact, **stadium-shaped** elements.
+    *   **UX Optimization**: Enabled constant button interactivity, removing restrictive input length checks for a smoother user flow.
+*   **Interactive UI Experience**: Enhanced user engagement using custom animations, transitions, and **Opacity** effects in the login flow.
 
-### 1. Full Firebase Integration
-*   **Cross-Platform Support**: Configured `firebase_core` and `firebase_auth` to work seamlessly on both Android and **Windows Desktop**.
-*   **Robust Error Handling**: Updated `user_dao.dart` with localized, user-friendly error messages.
-*   **Global Chat**: Real-time messaging system using **Cloud Firestore**.
+---
 
-### 2. Redesigned Login Experience (Green Theme)
-*   **Visual Overhaul**: Switched the primary theme from pink to a professional **Material Green** palette.
-*   **Logo Enhancement**: Updated brand identity with a high-resolution 250x250 logo.
-*   **Modern UI**: Redesigned Login and Sign Up buttons into compact, stadium-shaped elements.
+## Technical Implementation Journey (Ch 10–18)
 
-### 3. Navigation Optimization
-*   **Simplified UI**: Removed non-functional and placeholder tabs to focus on Explore, Orders, Chat, and Account.
-*   **Routing**: Refined `GoRouter` logic for more reliable tab-based navigation.
+### Chapter 10: Handling Shared Preferences
+*   Implemented local persistence for simple UI states using the `shared_preferences` plugin.
+*   Stored the user's last selected tab index and search history to maintain state across application restarts.
 
-### 4. Automated Testing (Chapter 17)
-*   **Unit Tests**: Added automated tests for core models (`Ingredient`, `Recipe`).
-*   **Mocking**: Integrated `Mockito` to test `DBRepository` logic in isolation without a real database.
-*   **Architecture**: Refactored code to use Dependency Injection for better stability and testability.
+### Chapter 11: Serialization With JSON
+*   Utilized `json_serializable` and **Freezed** for automated data model generation via `build_runner`.
+*   Ensured type-safe parsing of complex JSON health data structures using `fromJson` and `toJson` factory methods.
 
-### 5. Widget & Golden Testing (Chapter 18)
-*   **Component Testing**: Implemented widget tests for `IngredientCard` to verify UI structure and user interactions (tapping/checking).
-*   **Golden Tests**: Added visual regression tests using `golden_toolkit` to ensure consistent look and feel across light and dark themes.
-*   **Verification**: Verified state changes and callback triggers (e.g., `onChecked`) within UI components.
+### Chapter 12: Networking in Flutter
+*   Established remote data fetching using the `http` package and migrated to **Chopper** for a professional networking layer.
+*   Implemented **Request Interceptors** for automated API key management and **HttpLoggingInterceptor** for real-time traffic debugging.
 
-### 6. Technical Stability
-*   **Windows Build Fix**: Resolved critical C++ compilation issues encountered during Windows deployment by aligning Firebase plugin versions.
+### Chapter 13: Managing State (Riverpod)
+*   Adopted **Riverpod** for robust global state management and **Dependency Injection (DI)** via `ProviderScope`.
+*   Decoupled business logic from UI using the **Repository Pattern**, utilizing `overrides` for flexible service injection.
+
+### Chapter 14: Working With Streams
+*   Leveraged **Dart Streams**, `StreamController`, and **Broadcast Streams** to enable asynchronous, real-time UI updates.
+*   Synchronized data across screens (e.g., Bookmarks and Grocery lists) using `StreamBuilder` for a reactive user experience.
+
+### Chapter 15: Saving Data Locally (Drift)
+*   Integrated the **Drift** library to provide a permanent local SQLite database with automated code generation (`.g.dart`).
+*   Implemented **DAOs (Data Access Objects)** and handled **Schema Versioning** to manage structured storage with full offline support.
+
+### Chapter 16: Firebase Cloud Firestore
+*   Configured **Firebase Auth** for secure user registration, login, and real-time session management.
+*   Developed a global real-time chat system using **Cloud Firestore** collections and configured **Security Rules** to protect user data.
+
+### Chapter 17: Introduction to Testing
+*   Established a unit testing suite using the **Arrange-Act-Assert (AAA)** pattern for core models (`Ingredient`, `Recipe`).
+*   Utilized **Mockito** to create mock dependencies, enabling isolated testing of repositories without requiring a live database.
+
+### Chapter 18: Widget Testing
+*   Developed widget tests to verify UI structure and user interactions (tapping, checking) using the `WidgetTester` API and `pumpAndSettle`.
+*   Implemented **Visual Regression Testing (Golden Tests)** via `golden_toolkit` to ensure design consistency across themes.
+
+---
+
+## Technical Stability & Platform Support
+*   **Windows Desktop**: Resolved critical C++ compilation issues (`encodable_value.h`) to ensure stable Firebase and Drift performance on desktop.
+*   **Android**: Fully optimized with **MultiDex** support and native performance tweaks for mobile devices.
+*   **Clean Architecture**: Maintained a clear separation of concerns to ensure the codebase is scalable, maintainable, and testable.
+
+---
+
+## Getting Started
+
+1.  **Generate Code**: This project uses `build_runner` for models, database, and mocks.
+    ```bash
+    dart run build_runner build --delete-conflicting-outputs
+    ```
+2.  **Run Tests**:
+    ```bash
+    flutter test
+    ```
+3.  **Update Goldens**:
+    ```bash
+    flutter test --update-goldens
+    ```
