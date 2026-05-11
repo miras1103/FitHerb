@@ -15,81 +15,37 @@ This project serves as a submission for the "Cross-platform mobile development" 
     *   **Logo Enhancement**: Increased brand impact with a high-resolution **250x250** brand logo.
     *   **Modern UI Components**: Redesigned authentication buttons into compact, **stadium-shaped** elements.
     *   **UX Optimization**: Enabled constant button interactivity, removing restrictive input length checks for a smoother user flow.
-*   **Interactive UI Experience**: Enhanced user engagement using custom animations, transitions, and **Opacity** effects in the login flow.
 
 ---
 
-## Key Functional Modules
-
-*   **E-commerce & Shopping Cart**: Dynamic cart management featuring real-time quantity controls (`CartControl`) and a streamlined multi-step checkout process (`CheckoutPage`).
-*   **Community Social Feed**: An interactive health-focused social module where users can share tips, posts, and wellness advice (`PostSection`).
-*   **Discovery & Marketplace**: Sophisticated browsing for health stores and vitamins using adaptive layouts and landscape cards for optimal viewing across devices.
-*   [Real-time Interaction**: A global messaging system and instant UI updates for bookmarks and user-generated content.
-
----
-
-## Technical Implementation Journey
-
-### Chapter 10: Handling Shared Preferences
-*   Implemented local persistence for simple UI states using the `shared_preferences` plugin.
-*   Stored the user's last selected tab index and search history to maintain state across application restarts.
-
-### Chapter 11: Serialization With JSON
-*   Utilized `json_serializable` and **Freezed** for automated data model generation via `build_runner`.
-*   Ensured type-safe parsing of complex JSON health data structures using `fromJson` and `toJson` factory methods.
-
-### Chapter 12: Networking in Flutter
-*   Established remote data fetching using the `http` package and migrated to **Chopper** for a professional networking layer.
-*   Implemented **Request Interceptors** for automated API key management and **HttpLoggingInterceptor** for real-time traffic debugging.
-
-### Chapter 13: Managing State (Riverpod)
-*   Adopted **Riverpod** for robust global state management and **Dependency Injection (DI)** via `ProviderScope`.
-*   Decoupled business logic from UI using the **Repository Pattern**, utilizing `overrides` for flexible service injection.
-
-### Chapter 14: Working With Streams
-*   Leveraged **Dart Streams**, `StreamController`, and **Broadcast Streams** to enable asynchronous, real-time UI updates.
-*   Synchronized data across screens (e.g., Bookmarks and Grocery lists) using `StreamBuilder` for a reactive user experience.
-
-### Chapter 15: Saving Data Locally (Drift)
-*   Integrated the **Drift** library to provide a permanent local SQLite database with automated code generation (`.g.dart`).
-*   Implemented **DAOs (Data Access Objects)** and handled **Schema Versioning** to manage structured storage of user data with full offline support.
-
-### Chapter 16: Firebase Cloud Firestore
-*   Configured **Firebase Auth** for secure user registration, login, and real-time session management.
-*   Developed a global real-time chat system using **Cloud Firestore** collections and configured **Security Rules** to protect user data.
-
-### Chapter 17: Introduction to Testing
-*   Established a unit testing suite using the **Arrange-Act-Assert (AAA)** pattern for core models (`Ingredient`, `Recipe`).
-*   Utilized **Mockito** to create mock dependencies, enabling isolated testing of repositories without requiring a live database.
-
-### Chapter 18: Widget Testing
-*   Developed widget tests to verify UI structure and user interactions (tapping, checking) using the `WidgetTester` API and `pumpAndSettle`.
-*   Implemented **Visual Regression Testing (Golden Tests)** via `golden_toolkit` to ensure design consistency across themes.
-
-### Final Endterm Features: Firebase Cloud Integration
+## Final Endterm Features: Firebase Cloud Integration
 
 **Feature 1: Firebase Firestore Favorites**
-*   **Implementation**: Migrated the local bookmarking system to **Cloud Firestore** to fulfill the final project requirements.
-*   **Real-time Synchronization**: Uses Firestore `snapshots()` to keep the UI (favorites list and heart icons) updated in real-time across the app.
-*   **Cloud Data Persistence**: User-saved vitamins and videos are securely stored in the cloud under the user's UID, ensuring data is never lost and accessible across devices.
-*   **Optimistic UI Updates**: Enhanced the `BookmarkManager` to provide instant visual feedback, updating the local state immediately while the cloud request is processed.
+*   **Implementation**: Migrated the local bookmarking system to **Cloud Firestore**.
+*   **Real-time Synchronization**: Uses Firestore `snapshots()` to keep the UI (favorites list and heart icons) updated in real-time.
+*   **Premium Favorite Cards**: Redesigned favorites as interactive cards with quick-remove functionality and high-quality image rendering.
 
 **Feature 2: Product Reviews & Feedback System**
 *   **Implementation**: Implemented a cloud-based feedback system for vitamins.
-*   **User Comments**: Users can leave detailed feedback and reviews for products, which are stored in Firestore.
-*   **Live Review Feed**: Reviews are displayed in real-time on the product details page using Stream-based architecture.
+*   **Live Review Feed**: Reviews are displayed in real-time on the product details page with a modern, clean comment thread UI.
 
 **Feature 3: Saving Order History**
 *   **Implementation**: Migrated the order management system to **Cloud Firestore**.
-*   **History Persistence**: Completed orders are saved to the cloud, allowing users to view their purchase history across any device.
-*   **Secure Storage**: Orders are linked to the specific user's UID, containing details like items purchased, total cost, and delivery/pickup preferences.
+*   **Digital Receipt UI**: Redesigned the order history as a series of modern digital receipts, featuring real-time status badges (e.g., "COMPLETED"), calculated totals, and order timestamps.
+*   **Cloud Persistence**: All order data is securely stored under the user's UID for cross-device accessibility.
+
+**Feature 4: Advanced Profile Management**
+*   **Firestore Dashboard**: Transformed the account page into a personal wellness dashboard.
+*   **Extended Attributes**: Users can customize their **First Name**, **Last Name**, and **Age**, stored securely in a dedicated Firestore `users` collection.
+*   **Profile Analytics**: Added a visual stat bar showing **Total Orders** and **Favorites Count** for a more engaging user experience.
+*   **Reactive Profile Header**: Implemented a premium profile header with a "Verified Member" badge and instant cloud synchronization via `StreamBuilder`.
 
 ---
 
 ## Technical Stability & Platform Support
-*   **Windows Desktop**: Resolved critical C++ compilation issues (`encodable_value.h`) to ensure stable Firebase and Drift performance on desktop.
-*   **Android**: Fully optimized with **MultiDex** support and native performance tweaks for mobile devices.
-*   **Clean Architecture**: Maintained a clear separation of concerns to ensure the codebase is scalable, maintainable, and testable.
+*   **Windows Desktop**: Resolved critical C++ compilation issues to ensure stable Firebase and Drift performance.
+*   **Android**: Fully optimized with **MultiDex** support and native performance tweaks.
+*   **Clean Architecture**: Maintained a clear separation of concerns using **Riverpod** for state management and the **Repository Pattern**.
 
 ---
 
@@ -100,7 +56,6 @@ This project serves as a submission for the "Cross-platform mobile development" 
 *   [Firebase](https://firebase.google.com) - Auth & Cloud Firestore
 *   [Drift](https://drift.simonbinder.eu) - Local SQLite Database
 *   [Chopper](https://pub.dev/packages/chopper) - Networking layer
-*   [GoRouter](https://pub.dev/packages/go_router) - Navigation
 *   [Freezed](https://pub.dev/packages/freezed) - Immutable modeling
 
 ---

@@ -1,9 +1,11 @@
 import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class UserDao extends ChangeNotifier {
   final auth = FirebaseAuth.instance;
+  final firestore = FirebaseFirestore.instance;
 
   bool isLoggedIn() {
     return auth.currentUser != null;
@@ -15,6 +17,45 @@ class UserDao extends ChangeNotifier {
 
   String? email() {
     return auth.currentUser?.email;
+  }
+
+  String? displayName() {
+    return auth.currentUser?.displayName;
+  }
+
+  // Стрим для получения данных профиля из Firestore
+  Stream<DocumentSnapshot> getProfileStream() {
+    final uid = userId();
+    if (uid == null) return const Stream.empty();
+    return firestore.collection('users').doc(uid).snapshots();
+  }
+
+  Future<void> updateProfile({
+    required String firstName,
+    required String lastName,
+    required int age,
+  }) async {
+    try {
+      final uid = userId();
+      if (uid == null) return;
+
+      // 1. Обновляем displayName в Auth (для совместимости)
+      await auth.currentUser?.updateDisplayName('$firstName $lastName');
+      
+      // 2. Сохраняем расширенные данные в Firestore
+      await firestore.collection('users').doc(uid).set({
+        'firstName': firstName,
+        'lastName': lastName,
+        'age': age,
+        'email': email(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      await auth.currentUser?.reload();
+      notifyListeners();
+    } catch (e) {
+      log('Update Profile Error: $e');
+    }
   }
 
   Future<String?> signup(String email, String password) async {
@@ -61,13 +102,10 @@ class UserDao extends ChangeNotifier {
       return null;
     } on FirebaseAuthException catch (e) {
       log('Login Error Code: ${e.code}');
-      
-      // Map security codes to user-friendly messages
       if (e.code == 'invalid-credential' || e.code == 'wrong-password'
           || e.code == 'user-not-found') {
         return 'Incorrect email or password.';
       }
-      
       switch (e.code) {
         case 'invalid-email':
           return 'The email address is not valid.';

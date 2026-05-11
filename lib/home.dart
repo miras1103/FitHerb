@@ -62,18 +62,19 @@ class _HomeState extends ConsumerState<Home> {
   Widget build(BuildContext context) {
     final userDao = ref.watch(userDaoProvider);
     
-    // Получаем актуальные данные пользователя из Firebase через UserDao
+    // Получаем актуальные данные пользователя
     final String userEmail = userDao.email() ?? 'Guest@fitherb.com';
-    final String userName = userEmail.contains('@') 
+    
+    // Сначала пробуем взять displayName, если его нет - часть email
+    final String userName = userDao.displayName() ?? (userEmail.contains('@') 
         ? userEmail.split('@')[0] 
-        : userEmail;
+        : userEmail);
     
     final pages = [
       ExplorePage(
         cartManager: widget.cartManager,
         orderManager: widget.ordersManager,
       ),
-      // MyOrdersPage теперь сама берет данные из Firebase через провайдер
       const MyOrdersPage(),
       userDao.isLoggedIn() ? const MessageList() : const Login(),
       AccountPage(
