@@ -73,7 +73,8 @@ class _HomeState extends ConsumerState<Home> {
         cartManager: widget.cartManager,
         orderManager: widget.ordersManager,
       ),
-      MyOrdersPage(orderManager: widget.ordersManager),
+      // MyOrdersPage теперь сама берет данные из Firebase через провайдер
+      const MyOrdersPage(),
       userDao.isLoggedIn() ? const MessageList() : const Login(),
       AccountPage(
         onLogOut: (logout) async {

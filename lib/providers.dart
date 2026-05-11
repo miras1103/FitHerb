@@ -9,6 +9,8 @@ import 'models/message.dart';
 import 'models/bookmark_manager.dart';
 import 'models/review_dao.dart';
 import 'models/product_review.dart';
+import 'models/order_dao.dart';
+import 'models/order_manager.dart';
 
 final sharedPrefProvider = Provider<SharedPreferences>((ref) {
   throw UnimplementedError();
@@ -49,4 +51,13 @@ final reviewDaoProvider = Provider<ReviewDao>((ref) {
 final reviewListProvider = StreamProvider.family<List<ProductReview>, String>((ref, productId) {
   final reviewDao = ref.watch(reviewDaoProvider);
   return reviewDao.getReviewsStream(productId);
+});
+
+final orderDaoProvider = Provider<OrderDao>((ref) {
+  return OrderDao(ref.watch(userDaoProvider));
+});
+
+final orderListProvider = StreamProvider<List<Order>>((ref) {
+  final orderDao = ref.watch(orderDaoProvider);
+  return orderDao.getOrdersStream();
 });

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../models/models.dart';
+import '../providers.dart';
 
-class CheckoutPage extends StatefulWidget {
+class CheckoutPage extends ConsumerStatefulWidget {
   final CartManager cartManager;
   final Function() didUpdate;
   final Function(Order) onSubmit;
@@ -14,10 +16,10 @@ class CheckoutPage extends StatefulWidget {
       required this.onSubmit});
 
   @override
-  State<CheckoutPage> createState() => _CheckoutPageState();
+  ConsumerState<CheckoutPage> createState() => _CheckoutPageState();
 }
 
-class _CheckoutPageState extends State<CheckoutPage> {
+class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   final Map<int, Widget> myTabs = const <int, Widget>{
     0: Text('Delivery'),
     1: Text('Self Pick-Up')
@@ -120,7 +122,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
         itemBuilder: (context, index) {
           final item = widget.cartManager.itemAt(index);
 
-          // TODO: Wrap in a Dismissible Widget
           return Dismissible(
             key: Key(item.id),
             direction: DismissDirection.endToStart,
@@ -164,12 +165,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
     return ElevatedButton(
       onPressed: widget.cartManager.isEmpty
           ? null
-          : () {
+          : () async {
               final selectedSegment = this.selectedSegment;
               final selectedTime = this.selectedTime;
               final selectedDate = this.selectedDate;
               final name = _nameController.text;
-              final items = widget.cartManager.items;
+              final items = List<CartItem>.from(widget.cartManager.items);
 
               final order = Order(
                   selectedSegment: selectedSegment,
@@ -177,6 +178,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   selectedDate: selectedDate,
                   name: name,
                   items: items);
+
+              // Сохраняем заказ в Firebase
+              await ref.read(orderDaoProvider).saveOrder(order);
 
               widget.cartManager.resetCart();
               widget.onSubmit(order);

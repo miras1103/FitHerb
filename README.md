@@ -24,7 +24,7 @@ This project serves as a submission for the "Cross-platform mobile development" 
 *   **E-commerce & Shopping Cart**: Dynamic cart management featuring real-time quantity controls (`CartControl`) and a streamlined multi-step checkout process (`CheckoutPage`).
 *   **Community Social Feed**: An interactive health-focused social module where users can share tips, posts, and wellness advice (`PostSection`).
 *   **Discovery & Marketplace**: Sophisticated browsing for health stores and vitamins using adaptive layouts and landscape cards for optimal viewing across devices.
-*   **Real-time Interaction**: A global messaging system and instant UI updates for bookmarks and user-generated content.
+*   [Real-time Interaction**: A global messaging system and instant UI updates for bookmarks and user-generated content.
 
 ---
 
@@ -78,6 +78,11 @@ This project serves as a submission for the "Cross-platform mobile development" 
 *   **Implementation**: Implemented a cloud-based feedback system for vitamins.
 *   **User Comments**: Users can leave detailed feedback and reviews for products, which are stored in Firestore.
 *   **Live Review Feed**: Reviews are displayed in real-time on the product details page using Stream-based architecture.
+
+**Feature 3: Saving Order History**
+*   **Implementation**: Migrated the order management system to **Cloud Firestore**.
+*   **History Persistence**: Completed orders are saved to the cloud, allowing users to view their purchase history across any device.
+*   **Secure Storage**: Orders are linked to the specific user's UID, containing details like items purchased, total cost, and delivery/pickup preferences.
 
 ---
 
