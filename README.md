@@ -81,13 +81,14 @@ This project serves as a submission for the "Cross-platform mobile development" 
 *   **Reactive Profile Header**: Implemented a premium profile header with a "Verified Member" badge and instant cloud synchronization via `StreamBuilder`.
 
 **Feature 5: Platform-Specific Branding (Chapter 19)**
-*   **Unified Brand Identity**: Synchronized the "FitHerb" name across Android, iOS, and Web platforms.
+*   **Unified Brand Identity**: Synchronized the "FitHerb" name across Android, iOS, Windows, and Web platforms.
 *   **Custom App Icons**: Configured automated icon generation for all device resolutions using a custom wellness logo.
 *   **Launch Screen Optimization**: Optimized the launch experience to ensure professional transitions during app initialization.
 *   **Icon Verification (Paths)**:
     *   **Web**: Located in `web/favicon.png` and `web/icons/`.
     *   **Android**: Generated in `android/app/src/main/res/mipmap-*/ic_launcher.png`.
     *   **iOS**: Managed via Asset Catalog in `ios/Runner/Assets.xcassets/AppIcon.appiconset/`.
+    *   **Windows**: Generated in `windows/runner/resources/app_icon.ico`.
 
 ---
 
