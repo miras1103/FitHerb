@@ -28,6 +28,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
     // Подписываемся на изменения в BookmarkManager
     final bookmarkManager = ref.watch(bookmarkProvider);
     final favorites = bookmarkManager.bookmarks;
+    final isLoading = bookmarkManager.isLoading;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -37,7 +38,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
             const SizedBox(height: 40.0),
             buildProfile(),
             const SizedBox(height: 20.0),
-            _buildFavoritesSection(favorites, bookmarkManager),
+            _buildFavoritesSection(favorites, bookmarkManager, isLoading),
             const Divider(),
             buildMenu(),
           ],
@@ -46,15 +47,8 @@ class _AccountPageState extends ConsumerState<AccountPage> {
     );
   }
 
-  Widget _buildFavoritesSection(List<Recipe> favorites, BookmarkManager
-  manager) {
-    if (favorites.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Text('No favorites yet. Tap the heart on vitamins to add them!'),
-      );
-    }
-
+  Widget _buildFavoritesSection(
+      List<Recipe> favorites, BookmarkManager manager, bool isLoading) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -66,45 +60,68 @@ class _AccountPageState extends ConsumerState<AccountPage> {
           ),
         ),
         const SizedBox(height: 8),
-        // Используем ListView.builder для отображения избранного
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: favorites.length,
-          itemBuilder: (context, index) {
-            final item = favorites[index];
-            return Card(
-              margin: const EdgeInsets.only(bottom: 8),
-              child: ListTile(
-                leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: Image.asset(
-                    item.imageUrl,
-                    height: 40,
-                    width: 40,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.broken_image),
+        if (isLoading)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: CircularProgressIndicator(),
+            ),
+          )
+        else if (favorites.isEmpty)
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text('No favorites yet. Tap the heart on vitamins to add them!'),
+          )
+        else
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: favorites.length,
+            itemBuilder: (context, index) {
+              final item = favorites[index];
+              return Card(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: ListTile(
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: _buildItemImage(item.imageUrl),
+                  ),
+                  title: Text(item.title),
+                  subtitle: Text(item.brand, style: const TextStyle(fontSize: 12)),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      manager.removeBookmark(item.id);
+                    },
                   ),
                 ),
-                title: Text(item.title),
-                subtitle: Text(item.brand, style: const TextStyle(fontSize:
-                12)),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () {
-                    // Удаление из избранного сразу обновит UI
-                    manager.removeBookmark(item.id);
-                  },
-                ),
-              ),
-            );
-          },
-        ),
+              );
+            },
+          ),
         const SizedBox(height: 16),
       ],
     );
+  }
+
+  Widget _buildItemImage(String imageUrl) {
+    if (imageUrl.startsWith('http')) {
+      return Image.network(
+        imageUrl,
+        height: 40,
+        width: 40,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
+      );
+    } else {
+      return Image.asset(
+        imageUrl,
+        height: 40,
+        width: 40,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
+      );
+    }
   }
 
   Widget buildMenu() {
@@ -114,7 +131,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
           leading: const Icon(Icons.language),
           title: const Text('View Website'),
           onTap: () async {
-            await launchUrl(Uri.parse('https://www.google.com/'));
+            await launchUrl(Uri.parse('https://github.com/miras1103/FitHerb'));
           },
         ),
         const Divider(),
@@ -162,8 +179,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
           ),
           child: const Text(
             'FitHerb Member',
-            style: TextStyle(color: Color(0xFF2E7D32), fontWeight:
-            FontWeight.bold),
+            style: TextStyle(color: Color(0xFF2E7D32), fontWeight: FontWeight.bold),
           ),
         ),
       ],

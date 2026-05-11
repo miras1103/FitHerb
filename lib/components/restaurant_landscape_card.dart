@@ -16,7 +16,7 @@ class RestaurantLandscapeCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bookmarkManager = ref.watch(bookmarkProvider);
-    final isFavorited = bookmarkManager.isBookmarked(restaurant.id);
+    final isFavorited = bookmarkManager.isFavorite(restaurant.attributes, restaurant.name);
     
     final textTheme = Theme.of(context)
         .textTheme
@@ -45,21 +45,28 @@ class RestaurantLandscapeCard extends ConsumerWidget {
                     Positioned(
                       top: 4.0,
                       right: 4.0,
-                      child: IconButton(
-                        icon: Icon(isFavorited
-                            ? Icons.favorite
-                            : Icons.favorite_border),
-                        iconSize: 30.0,
-                        color: Colors.red[400],
-                        onPressed: () {
-                          final recipe = Recipe(
-                            id: restaurant.id,
-                            imageUrl: restaurant.imageUrl,
-                            title: restaurant.name,
-                            brand: restaurant.attributes,
-                          );
-                          bookmarkManager.toggleBookmark(recipe);
-                        },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.7),
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          icon: Icon(isFavorited
+                              ? Icons.favorite
+                              : Icons.favorite_border),
+                          iconSize: 28.0,
+                          // Если в избранном - красный, если нет - серый
+                          color: isFavorited ? Colors.red : Colors.grey[600],
+                          onPressed: () {
+                            final recipe = Recipe(
+                              id: restaurant.id,
+                              imageUrl: restaurant.imageUrl,
+                              title: restaurant.name,
+                              brand: restaurant.attributes,
+                            );
+                            bookmarkManager.toggleBookmark(recipe);
+                          },
+                        ),
                       ),
                     ),
                   ],

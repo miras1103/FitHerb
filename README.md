@@ -2,7 +2,7 @@
 
 **FitHerb** is a modern wellness and health-focused mobile application developed with Flutter. It is designed to help users discover vitamins, supplements, and healthy lifestyle content while providing tools for social interaction and personalized data management.
 
-This project serves as a **Midterm** submission for the "Cross-platform mobile development" course, demonstrating a full development lifecycle from UI/UX design to cloud integration and automated testing.
+This project serves as a submission for the "Cross-platform mobile development" course, demonstrating a full development lifecycle from UI/UX design to cloud integration and automated testing.
 
 ---
 
@@ -28,7 +28,7 @@ This project serves as a **Midterm** submission for the "Cross-platform mobile d
 
 ---
 
-## Technical Implementation Journey (Ch 10–18)
+## Technical Implementation Journey
 
 ### Chapter 10: Handling Shared Preferences
 *   Implemented local persistence for simple UI states using the `shared_preferences` plugin.
@@ -65,6 +65,12 @@ This project serves as a **Midterm** submission for the "Cross-platform mobile d
 ### Chapter 18: Widget Testing
 *   Developed widget tests to verify UI structure and user interactions (tapping, checking) using the `WidgetTester` API and `pumpAndSettle`.
 *   Implemented **Visual Regression Testing (Golden Tests)** via `golden_toolkit` to ensure design consistency across themes.
+
+### Final Endterm Feature: Firebase Cloud Integration
+*   **Firebase Firestore Favorites**: Migrated the local bookmarking system to **Cloud Firestore** to fulfill the final project requirements.
+    *   **Real-time Synchronization**: Uses Firestore `snapshots()` to keep the UI (favorites list and heart icons) updated in real-time across the app.
+    *   **Cloud Data Persistence**: User-saved vitamins and videos are securely stored in the cloud under the user's UID, ensuring data is never lost and accessible across devices.
+    *   **Optimistic UI Updates**: Enhanced the `BookmarkManager` to provide instant visual feedback, updating the local state immediately while the cloud request is processed.
 
 ---
 

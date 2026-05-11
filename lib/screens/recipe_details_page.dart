@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../api/spoonacular_service.dart';
 import '../models/models.dart';
-import '../models/ingredient.dart';
 import '../providers.dart';
 
 class RecipeDetailsPage extends ConsumerStatefulWidget {
@@ -34,42 +33,31 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
     super.dispose();
   }
 
-  void _toggleBookmark(bool isBookmarked) {
-    final repository = ref.read(repositoryProvider.notifier);
-    if (isBookmarked) {
-      repository.deleteRecipe(widget.recipe);
-    } else {
-      List<Ingredient> ingredients = [];
-      if (_currentDetails != null) {
-        final text = _currentDetails!['ingredients_text'] as String? ?? '';
-        if (text.isNotEmpty) {
-          ingredients.add(Ingredient(
-            recipeId: int.tryParse(widget.recipe.id),
-            name: text,
-            amount: 0.0,
-          ));
-        }
-      }
-      final recipeToSave = widget.recipe.copyWith(ingredients: ingredients);
-      repository.insertRecipe(recipeToSave);
-    }
+  void _toggleBookmark() {
+    final manager = ref.read(bookmarkProvider);
+    // Используем оригинальный объект рецепта для сохранения, 
+    // чтобы ID (Бренд_Название) всегда был стабильным и совпадал с проверкой
+    manager.toggleBookmark(widget.recipe);
   }
 
   @override
   Widget build(BuildContext context) {
-    final repoState = ref.watch(repositoryProvider);
-    final isBookmarked = repoState.currentRecipes.any(
-      (r) => r.id == widget.recipe.id,
-    );
+    final bookmarkManager = ref.watch(bookmarkProvider);
+    // Проверяем статус по оригинальным данным
+    final isBookmarked = bookmarkManager.isFavorite(widget.recipe.brand, widget.recipe.title);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.recipe.title),
         actions: [
           IconButton(
-            tooltip: isBookmarked ? 'Remove bookmark' : 'Add bookmark',
-            icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border),
-            onPressed: () => _toggleBookmark(isBookmarked),
+            tooltip: isBookmarked ? 'Remove from favorites' : 'Add to favorites',
+            // Используем сердечко вместо закладки
+            icon: Icon(
+              isBookmarked ? Icons.favorite : Icons.favorite_border,
+              color: isBookmarked ? Colors.red : null,
+            ),
+            onPressed: _toggleBookmark,
           ),
         ],
       ),

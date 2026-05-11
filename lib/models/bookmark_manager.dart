@@ -1,14 +1,12 @@
-import 'dart:convert';
+import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'recipe.dart';
 import 'youtube_video.dart';
 
 class BookmarkManager extends ChangeNotifier {
   final String? userId;
-  
-  String get _bookmarkKey => userId != null ? 'vitaminBookmarks_$userId' : 'vitaminBookmarks_guest';
-  String get _videoKey => userId != null ? 'videoBookmarks_$userId' : 'videoBookmarks_guest';
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   
   List<Recipe> _bookmarks = [];
   List<YoutubeVideo> _videoBookmarks = [];
@@ -18,88 +16,130 @@ class BookmarkManager extends ChangeNotifier {
   List<YoutubeVideo> get videoBookmarks => _videoBookmarks;
   bool get isLoading => _isLoading;
 
+  StreamSubscription? _bookmarksSubscription;
+  StreamSubscription? _videosSubscription;
+
   BookmarkManager(this.userId) {
-    _load();
+    if (userId != null) {
+      _listenToFavorites();
+    } else {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
-  Future<void> _load() async {
-    final prefs = await SharedPreferences.getInstance();
-    
-    // Load Vitamin Bookmarks
-    final values = prefs.getStringList(_bookmarkKey) ?? [];
-    _bookmarks = values
-        .map((v) => jsonDecode(v) as Map<String, dynamic>)
-        .map(Recipe.fromJson)
-        .toList();
-
-    // Load Video Bookmarks
-    final videoValues = prefs.getStringList(_videoKey) ?? [];
-    _videoBookmarks = videoValues
-        .map((v) => YoutubeVideo.fromJson(jsonDecode(v)))
-        .toList();
-
-    _isLoading = false;
-    notifyListeners();
+  String generateSafeId(String brand, String title) {
+    final cleanBrand = brand.trim().toLowerCase();
+    final cleanTitle = title.trim().toLowerCase();
+    final rawId = '${cleanBrand}_$cleanTitle';
+    return rawId.replaceAll(RegExp(r'[^a-z0-9_]'), '_');
   }
 
-  // Vitamin Bookmarks
-  Future<List<Recipe>> getBookmarks() async {
-    if (_isLoading) await _load();
-    return _bookmarks;
+  void _listenToFavorites() {
+    _bookmarksSubscription?.cancel();
+    _videosSubscription?.cancel();
+
+    _bookmarksSubscription = _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('favorites')
+        .snapshots()
+        .listen((snapshot) {
+      _bookmarks = snapshot.docs.map((doc) {
+        return Recipe.fromJson(doc.data()).copyWith(id: doc.id);
+      }).toList();
+      _isLoading = false;
+      notifyListeners();
+    }, onError: (error) {
+      debugPrint('Error listening to favorites: $error');
+      _isLoading = false;
+      notifyListeners();
+    });
+
+    _videosSubscription = _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('favorite_videos')
+        .snapshots()
+        .listen((snapshot) {
+      _videoBookmarks = snapshot.docs
+          .map((doc) => YoutubeVideo.fromJson(doc.data()))
+          .toList();
+      notifyListeners();
+    }, onError: (error) {
+      debugPrint('Error listening to favorite videos: $error');
+    });
   }
 
-  bool isBookmarked(String id) {
-    return _bookmarks.any((r) => r.id == id);
+  @override
+  void dispose() {
+    _bookmarksSubscription?.cancel();
+    _videosSubscription?.cancel();
+    super.dispose();
+  }
+
+  // --- Витамины ---
+  bool isFavorite(String brand, String title) {
+    final targetId = generateSafeId(brand, title);
+    return _bookmarks.any((r) => r.id == targetId);
   }
 
   Future<void> toggleBookmark(Recipe r) async {
-    final index = _bookmarks.indexWhere((item) => item.id == r.id);
-    if (index != -1) {
-      _bookmarks.removeAt(index);
+    if (userId == null) return;
+    final customId = generateSafeId(r.brand, r.title);
+    final docRef = _firestore.collection('users').doc(userId).collection('favorites').doc(customId);
+
+    if (isFavorite(r.brand, r.title)) {
+      _bookmarks.removeWhere((item) => item.id == customId);
+      notifyListeners();
+      try { await docRef.delete(); } catch (e) { _listenToFavorites(); }
     } else {
-      _bookmarks.add(r);
+      final newRecipe = r.copyWith(id: customId);
+      _bookmarks.add(newRecipe);
+      notifyListeners();
+      try {
+        final data = r.toJson();
+        data['id'] = customId;
+        await docRef.set(data);
+      } catch (e) { _listenToFavorites(); }
     }
-    notifyListeners();
-    await _save();
   }
 
   Future<void> removeBookmark(String id) async {
-    _bookmarks.removeWhere((r) => r.id == id);
+    if (userId == null) return;
+    _bookmarks.removeWhere((item) => item.id == id);
     notifyListeners();
-    await _save();
+    try {
+      await _firestore.collection('users').doc(userId).collection('favorites').doc(id).delete();
+    } catch (e) { _listenToFavorites(); }
   }
 
-  Future<void> _save() async {
-    final prefs = await SharedPreferences.getInstance();
-    final values = _bookmarks.map((r) => jsonEncode(r.toJson())).toList();
-    await prefs.setStringList(_bookmarkKey, values);
-  }
-
-  // --- Video Bookmarks ---
-
-  Future<List<YoutubeVideo>> getVideoBookmarks() async {
-    if (_isLoading) await _load();
-    return _videoBookmarks;
-  }
-
+  // --- Видео ---
   bool isVideoBookmarked(String id) {
     return _videoBookmarks.any((v) => v.id == id);
   }
 
   Future<void> toggleVideoBookmark(YoutubeVideo video) async {
-    final index = _videoBookmarks.indexWhere((v) => v.id == video.id);
-    if (index != -1) {
-      _videoBookmarks.removeAt(index);
+    if (userId == null) return;
+    
+    final docRef = _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('favorite_videos')
+        .doc(video.id);
+
+    if (isVideoBookmarked(video.id)) {
+      _videoBookmarks.removeWhere((v) => v.id == video.id);
+      notifyListeners();
+      try {
+        await docRef.delete();
+      } catch (e) { _listenToFavorites(); }
     } else {
       _videoBookmarks.add(video);
+      notifyListeners();
+      try {
+        await docRef.set(video.toJson());
+      } catch (e) { _listenToFavorites(); }
     }
-    notifyListeners();
-    await _saveVideos();
-  }
-
-  Future<void> _saveVideos() async {
-    final prefs = await SharedPreferences.getInstance();
-    final values = _videoBookmarks.map((v) => jsonEncode(v.toJson())).toList();
-    await prefs.setStringList(_videoKey, values);
   }
 }
