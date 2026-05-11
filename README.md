@@ -66,11 +66,18 @@ This project serves as a submission for the "Cross-platform mobile development" 
 *   Developed widget tests to verify UI structure and user interactions (tapping, checking) using the `WidgetTester` API and `pumpAndSettle`.
 *   Implemented **Visual Regression Testing (Golden Tests)** via `golden_toolkit` to ensure design consistency across themes.
 
-### Final Endterm Feature: Firebase Cloud Integration
-*   **Firebase Firestore Favorites**: Migrated the local bookmarking system to **Cloud Firestore** to fulfill the final project requirements.
-    *   **Real-time Synchronization**: Uses Firestore `snapshots()` to keep the UI (favorites list and heart icons) updated in real-time across the app.
-    *   **Cloud Data Persistence**: User-saved vitamins and videos are securely stored in the cloud under the user's UID, ensuring data is never lost and accessible across devices.
-    *   **Optimistic UI Updates**: Enhanced the `BookmarkManager` to provide instant visual feedback, updating the local state immediately while the cloud request is processed.
+### Final Endterm Features: Firebase Cloud Integration
+
+**Feature 1: Firebase Firestore Favorites**
+*   **Implementation**: Migrated the local bookmarking system to **Cloud Firestore** to fulfill the final project requirements.
+*   **Real-time Synchronization**: Uses Firestore `snapshots()` to keep the UI (favorites list and heart icons) updated in real-time across the app.
+*   **Cloud Data Persistence**: User-saved vitamins and videos are securely stored in the cloud under the user's UID, ensuring data is never lost and accessible across devices.
+*   **Optimistic UI Updates**: Enhanced the `BookmarkManager` to provide instant visual feedback, updating the local state immediately while the cloud request is processed.
+
+**Feature 2: Product Reviews & Feedback System**
+*   **Implementation**: Implemented a cloud-based feedback system for vitamins.
+*   **User Comments**: Users can leave detailed feedback and reviews for products, which are stored in Firestore.
+*   **Live Review Feed**: Reviews are displayed in real-time on the product details page using Stream-based architecture.
 
 ---
 

@@ -1,59 +1,157 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import '../models/models.dart';
+import '../providers.dart';
 import 'cart_control.dart';
 
-class ItemDetails extends StatefulWidget {
+class ItemDetails extends ConsumerStatefulWidget {
   final Item item;
   final CartManager cartManager;
   final void Function() quantityUpdated;
 
-  // 1
-  const ItemDetails(
-      {Key? key,
-      required this.item,
-      required this.cartManager,
-      required this.quantityUpdated})
-      : super(key: key);
+  const ItemDetails({
+    Key? key,
+    required this.item,
+    required this.cartManager,
+    required this.quantityUpdated,
+  }) : super(key: key);
 
   @override
-  State<ItemDetails> createState() => _ItemDetailsState();
+  ConsumerState<ItemDetails> createState() => _ItemDetailsState();
 }
 
-class _ItemDetailsState extends State<ItemDetails> {
+class _ItemDetailsState extends ConsumerState<ItemDetails> {
+  final TextEditingController _reviewController = TextEditingController();
+
+  @override
+  void dispose() {
+    _reviewController.dispose();
+    super.dispose();
+  }
+
+  void _sendReview() {
+    if (_reviewController.text.trim().isEmpty) return;
+    
+    // Используем название товара как ID для отзывов, так как у Item в этой модели нет уникального UUID
+    final productId = widget.item.name; 
+
+    ref.read(reviewDaoProvider).sendReview(
+      _reviewController.text,
+      productId,
+    );
+    
+    _reviewController.clear();
+    FocusScope.of(context).unfocus();
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Thank you for your feedback!')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // 2
     final textTheme = Theme.of(context)
         .textTheme
         .apply(displayColor: Theme.of(context).colorScheme.onSurface);
-    // 3
     final colorTheme = Theme.of(context).colorScheme;
+    
+    // Слушаем отзывы именно к этому товару
+    final reviewsAsyncValue = ref.watch(reviewListProvider(widget.item.name));
 
-    // 4
-    return Padding(
+    return Container(
       padding: const EdgeInsets.all(16.0),
-      // 5
-      child: Wrap(
-        children: [
-          // 6
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(widget.item.name, style: textTheme.headlineMedium),
-              const SizedBox(
-                height: 16.0,
-              ),
-              _mostLikedBadge(colorTheme),
-              const SizedBox(height: 16.0),
-              Text(widget.item.description),
-              const SizedBox(height: 16.0),
-              _itemImage(widget.item.imageUrl),
-              const SizedBox(height: 16.0),
-              _addToCartControl(widget.item),
-            ],
-          ),
-        ],
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(widget.item.name, style: textTheme.headlineMedium),
+            const SizedBox(height: 16.0),
+            _mostLikedBadge(colorTheme),
+            const SizedBox(height: 16.0),
+            Text(widget.item.description),
+            const SizedBox(height: 16.0),
+            _itemImage(widget.item.imageUrl),
+            const SizedBox(height: 16.0),
+            _addToCartControl(widget.item),
+            
+            const Divider(height: 32),
+            
+            // СЕКЦИЯ ОТЗЫВОВ
+            const Text(
+              'Reviews',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            
+            // Поле ввода
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _reviewController,
+                    decoration: InputDecoration(
+                      hintText: 'Add a review...',
+                      isDense: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: _sendReview,
+                  icon: const Icon(Icons.send, color: Colors.green),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Список отзывов
+            reviewsAsyncValue.when(
+              data: (reviews) {
+                if (reviews.isEmpty) {
+                  return const Text('No reviews for this product yet.', 
+                    style: TextStyle(color: Colors.grey, fontSize: 13));
+                }
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: reviews.length,
+                  itemBuilder: (context, index) {
+                    final r = reviews[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(r.email, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.green)),
+                              Text(DateFormat('dd.MM.yyyy').format(r.timestamp), style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                            ],
+                          ),
+                          Text(r.text, style: const TextStyle(fontSize: 14)),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, st) => Text('Error: $e'),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
@@ -73,7 +171,6 @@ class _ItemDetailsState extends State<ItemDetails> {
       height: 200,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8.0),
-        // 3
         image: DecorationImage(
           image: NetworkImage(imageUrl),
           fit: BoxFit.cover,
@@ -82,22 +179,17 @@ class _ItemDetailsState extends State<ItemDetails> {
     );
   }
 
-  // 1
   Widget _addToCartControl(Item item) {
-    // 2
     return CartControl(
-      // 3
       addToCart: (number) {
         const uuid = Uuid();
         final uniqueId = uuid.v4();
         final cartItem = CartItem(
             id: uniqueId, name: item.name, price: item.price, quantity: number);
-        // 4
         setState(() {
           widget.cartManager.addItem(cartItem);
           widget.quantityUpdated();
         });
-        // 5
         Navigator.pop(context);
       },
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import '../api/spoonacular_service.dart';
 import '../models/models.dart';
 import '../providers.dart';
@@ -20,6 +21,7 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
   final SpoonacularService _service = SpoonacularService();
   late Future<Map<String, dynamic>> _detailsFuture;
   Map<String, dynamic>? _currentDetails;
+  final TextEditingController _reviewController = TextEditingController();
 
   @override
   void initState() {
@@ -30,21 +32,35 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
   @override
   void dispose() {
     _service.close();
+    _reviewController.dispose();
     super.dispose();
   }
 
   void _toggleBookmark() {
     final manager = ref.read(bookmarkProvider);
-    // Используем оригинальный объект рецепта для сохранения, 
-    // чтобы ID (Бренд_Название) всегда был стабильным и совпадал с проверкой
     manager.toggleBookmark(widget.recipe);
+  }
+
+  void _sendReview() {
+    if (_reviewController.text.trim().isEmpty) return;
+    
+    ref.read(reviewDaoProvider).sendReview(
+      _reviewController.text,
+      widget.recipe.id,
+    );
+    _reviewController.clear();
+    FocusScope.of(context).unfocus();
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Review submitted!')),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final bookmarkManager = ref.watch(bookmarkProvider);
-    // Проверяем статус по оригинальным данным
     final isBookmarked = bookmarkManager.isFavorite(widget.recipe.brand, widget.recipe.title);
+    final reviewsAsyncValue = ref.watch(reviewListProvider(widget.recipe.id));
 
     return Scaffold(
       appBar: AppBar(
@@ -52,7 +68,6 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
         actions: [
           IconButton(
             tooltip: isBookmarked ? 'Remove from favorites' : 'Add to favorites',
-            // Используем сердечко вместо закладки
             icon: Icon(
               isBookmarked ? Icons.favorite : Icons.favorite_border,
               color: isBookmarked ? Colors.red : null,
@@ -86,9 +101,126 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
               _buildIngredients(details),
               const SizedBox(height: 16),
               _buildNutrients(details),
+              const Divider(height: 32),
+              _buildReviewInput(),
+              const SizedBox(height: 16),
+              _buildReviewsList(reviewsAsyncValue),
             ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildReviewInput() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Write a Review',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _reviewController,
+                decoration: InputDecoration(
+                  hintText: 'Share your experience...',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[100],
+                ),
+                maxLines: 2,
+              ),
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              onPressed: _sendReview,
+              icon: const Icon(Icons.send, color: Colors.green),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReviewsList(AsyncValue<List<ProductReview>> reviewsAsyncValue) {
+    return reviewsAsyncValue.when(
+      data: (reviews) {
+        if (reviews.isEmpty) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Text(
+                'No reviews yet. Be the first to review!',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'User Reviews (${reviews.length})',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: reviews.length,
+              itemBuilder: (context, index) {
+                final review = reviews[index];
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              review.email,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                              ),
+                            ),
+                            Text(
+                              DateFormat('MMM dd, yyyy').format(review.timestamp),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(review.text),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, st) => const Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Text('Could not load reviews. Please try again later.', 
+          style: TextStyle(color: Colors.red)),
       ),
     );
   }
