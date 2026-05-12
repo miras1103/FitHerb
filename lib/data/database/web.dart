@@ -1,13 +1,8 @@
 import 'package:drift/drift.dart';
-import 'package:drift/wasm.dart';
+import 'package:drift/web.dart';
 
 QueryExecutor connect() {
-  return DatabaseConnection.delayed(Future(() async {
-    final result = await WasmDatabase.open(
-      databaseName: 'recipes_db',
-      sqlite3Uri: Uri.parse('sqlite3.wasm'),
-      driftWorkerUri: Uri.parse('drift_worker.js'),
-    );
-    return result.resolvedExecutor;
-  }));
+  // Используем WebDatabase вместо WasmDatabase, чтобы не требовались файлы sqlite3.wasm и drift_worker.js
+  // Это исправляет ошибку "Incorrect response MIME type" в Chrome
+  return WebDatabase('recipes_db', logStatements: false);
 }

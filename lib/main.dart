@@ -17,10 +17,13 @@ import 'data/repositories/db_repository.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // 1. Инициализация Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    debugPrint('Firebase initialization failed: $e');
+  }
 
   final sharedPrefs = await SharedPreferences.getInstance();
   final service = SpoonacularService();
@@ -29,13 +32,15 @@ Future<void> main() async {
     overrides: [
       sharedPrefProvider.overrideWithValue(sharedPrefs),
       serviceProvider.overrideWithValue(service),
-      // Подставляем наш DBRepository для работы с локальной базой Drift
       repositoryProvider.overrideWith(() => DBRepository()),
     ],
   );
 
-  // 2. Инициализация локальной базы данных Drift
-  await container.read(repositoryProvider.notifier).init();
+  try {
+    await container.read(repositoryProvider.notifier).init();
+  } catch (e) {
+    debugPrint('Database initialization failed: $e');
+  }
 
   runApp(
     UncontrolledProviderScope(
@@ -72,7 +77,6 @@ class _YummyState extends ConsumerState<Yummy> {
 
   late final _router = GoRouter(
     initialLocation: '/0',
-    // Слушаем изменения в UserDao для автоматического реагирования роутера на вход/выход
     refreshListenable: ref.read(userDaoProvider),
     redirect: _appRedirect,
     routes: [
@@ -80,7 +84,6 @@ class _YummyState extends ConsumerState<Yummy> {
         path: '/login',
         builder: (context, state) => LoginPage(
           onLogIn: (Credentials credentials) async {
-            // Выполняем вход через Firebase
             final error = await ref.read(userDaoProvider).login(
                   credentials.username,
                   credentials.password,
@@ -94,7 +97,6 @@ class _YummyState extends ConsumerState<Yummy> {
             }
           },
           onSignUp: (Credentials credentials) async {
-            // Выполняем регистрацию через Firebase
             final error = await ref.read(userDaoProvider).signup(
                   credentials.username,
                   credentials.password,
@@ -170,6 +172,7 @@ class _YummyState extends ConsumerState<Yummy> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      title: 'FitHerb', // Визуальное название приложения
       debugShowCheckedModeBanner: false,
       routerConfig: _router,
       scrollBehavior: CustomScrollBehavior(),
