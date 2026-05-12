@@ -22,10 +22,13 @@ class LoginPage extends StatelessWidget {
       backgroundColor: const Color(0xFFF1F8E9), // Светло-зеленый фон (Material Green 50)
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 40.0),
-          child: LoginForm(
-            onLogIn: onLogIn,
-            onSignUp: onSignUp,
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 350), // Ограничиваем ширину для красоты
+            child: LoginForm(
+              onLogIn: onLogIn,
+              onSignUp: onSignUp,
+            ),
           ),
         ),
       ),
@@ -68,97 +71,106 @@ class _LoginFormState extends State<LoginForm> {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Image.asset(
           'assets/yummy_logo.png',
-          height: 200,
-          width: 200,
+          height: 180,
+          width: 180,
         ),
-        const SizedBox(height: 30),
-        TextField(
+        const SizedBox(height: 40),
+        _buildTextField(
           controller: _emailController,
+          hint: 'Email',
+          icon: Icons.email_outlined,
           keyboardType: TextInputType.emailAddress,
-          textInputAction: TextInputAction.next, // Переход к следующему полю
-          decoration: InputDecoration(
-            hintText: 'Email',
-            filled: true,
-            fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30.0),
-              borderSide: BorderSide(color: Colors.green.shade100),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30.0),
-              borderSide: BorderSide(color: Colors.green.shade100),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30.0),
-              borderSide: BorderSide(color: Colors.green.shade300, width: 2),
-            ),
-          ),
+          textInputAction: TextInputAction.next,
         ),
-        const SizedBox(height: 12),
-        TextField(
+        const SizedBox(height: 16),
+        _buildTextField(
           controller: _passwordController,
+          hint: 'Password',
+          icon: Icons.lock_outline,
           obscureText: true,
-          textInputAction: TextInputAction.done, // Завершение ввода
-          onSubmitted: (_) => _handleLogin(), // Вход по Enter
-          decoration: InputDecoration(
-            hintText: 'Password',
-            filled: true,
-            fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30.0),
-              borderSide: BorderSide(color: Colors.green.shade100),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30.0),
-              borderSide: BorderSide(color: Colors.green.shade100),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30.0),
-              borderSide: BorderSide(color: Colors.green.shade300, width: 2),
-            ),
-          ),
+          textInputAction: TextInputAction.done,
+          onSubmitted: (_) => _handleLogin(),
         ),
-        const SizedBox(height: 30),
-        _buildCompactButton(
+        const SizedBox(height: 32),
+        _buildActionButton(
           text: 'Login',
           onPressed: _handleLogin,
+          isPrimary: true,
         ),
         const SizedBox(height: 12),
-        _buildCompactButton(
+        _buildActionButton(
           text: 'Sign Up',
           onPressed: () => widget.onSignUp(
             Credentials(_emailController.text, _passwordController.text),
           ),
+          isPrimary: false,
         ),
       ],
     );
   }
 
-  Widget _buildCompactButton({
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    bool obscureText = false,
+    TextInputType? keyboardType,
+    TextInputAction? textInputAction,
+    Function(String)? onSubmitted,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      onSubmitted: onSubmitted,
+      decoration: InputDecoration(
+        hintText: hint,
+        prefixIcon: Icon(icon, color: Colors.green.shade400, size: 22),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15.0),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15.0),
+          borderSide: BorderSide(color: Colors.green.shade50),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15.0),
+          borderSide: BorderSide(color: Colors.green.shade300, width: 1.5),
+        ),
+        hintStyle: TextStyle(color: Colors.grey.shade400),
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
     required String text,
     required VoidCallback onPressed,
+    required bool isPrimary,
   }) {
-    return SizedBox(
-      width: 180,
-      height: 45,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFC8E6C9),
-          foregroundColor: const Color(0xFF1B5E20),
-          elevation: 0,
-          shape: const StadiumBorder(),
-          side: BorderSide(color: Colors.green.shade200),
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isPrimary ? Colors.green.shade600 : Colors.white,
+        foregroundColor: isPrimary ? Colors.white : Colors.green.shade700,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        elevation: isPrimary ? 2 : 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+          side: isPrimary ? BorderSide.none : BorderSide(color: Colors.green.shade100),
         ),
-        child: Text(
-          text,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
     );
   }
