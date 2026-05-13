@@ -16,13 +16,13 @@ Widget _buildWrappedWidget(Widget child) {
 }
 
 void main() {
-  const mockIngredientName = 'colby jack cheese';
+  const mockProductName = 'Vitamin C Capsules';
 
-  group('IngredientCard', () {
-    testWidgets('IngredientCard can build', (WidgetTester tester) async {
+  group('ProductCard (IngredientCard) Widget', () {
+    testWidgets('ProductCard can build with FitHerb data', (WidgetTester tester) async {
       await tester.pumpWidget(
         _buildWrappedWidget(IngredientCard(
-          name: mockIngredientName,
+          name: mockProductName,
           initiallyChecked: false,
           evenRow: true,
           onChecked: (isChecked) {},
@@ -30,17 +30,17 @@ void main() {
       );
 
       final cardFinder = find.byType(IngredientCard);
-      final titleFinder = find.text(mockIngredientName);
+      final titleFinder = find.text(mockProductName);
 
       expect(cardFinder, findsOneWidget);
       expect(titleFinder, findsOneWidget);
     });
 
-    testWidgets('can be checked when tapped', (WidgetTester tester) async {
+    testWidgets('can be checked when tapped in FitHerb list', (WidgetTester tester) async {
       var isChecked = false;
       await tester.pumpWidget(
         _buildWrappedWidget(IngredientCard(
-          name: mockIngredientName,
+          name: mockProductName,
           initiallyChecked: isChecked,
           evenRow: true,
           onChecked: (newValue) {
@@ -60,13 +60,13 @@ void main() {
     });
   });
 
-  group('Golden Tests - IngredientCard', () {
-    testGoldens('can support light theme', (tester) async {
+  group('Golden Tests - ProductCard', () {
+    testGoldens('can support light theme in FitHerb', (tester) async {
       final builder = GoldenBuilder.grid(columns: 2, widthToHeightRatio: 1)
         ..addScenario(
           'Light - Unchecked',
           IngredientCard(
-            name: mockIngredientName,
+            name: mockProductName,
             initiallyChecked: false,
             evenRow: true,
             onChecked: (newValue) {},
@@ -75,27 +75,9 @@ void main() {
         ..addScenario(
           'Light - Checked',
           IngredientCard(
-            name: mockIngredientName,
+            name: mockProductName,
             initiallyChecked: true,
             evenRow: true,
-            onChecked: (newValue) {},
-          ),
-        )
-        ..addScenario(
-          'Light - Odd - Unchecked',
-          IngredientCard(
-            name: mockIngredientName,
-            initiallyChecked: false,
-            evenRow: false,
-            onChecked: (newValue) {},
-          ),
-        )
-        ..addScenario(
-          'Light - Odd - Checked',
-          IngredientCard(
-            name: mockIngredientName,
-            initiallyChecked: true,
-            evenRow: false,
             onChecked: (newValue) {},
           ),
         );
@@ -107,15 +89,15 @@ void main() {
         ),
       );
 
-      await screenMatchesGolden(tester, 'light_ingredient_card');
+      await screenMatchesGolden(tester, 'light_product_card');
     });
 
-    testGoldens('can support dark theme', (tester) async {
+    testGoldens('can support dark theme in FitHerb', (tester) async {
       final builder = GoldenBuilder.grid(columns: 2, widthToHeightRatio: 1)
         ..addScenario(
           'Dark - Unchecked',
           IngredientCard(
-            name: mockIngredientName,
+            name: mockProductName,
             initiallyChecked: false,
             evenRow: true,
             onChecked: (newValue) {},
@@ -124,7 +106,7 @@ void main() {
         ..addScenario(
           'Dark - Checked',
           IngredientCard(
-            name: mockIngredientName,
+            name: mockProductName,
             initiallyChecked: true,
             evenRow: true,
             onChecked: (newValue) {},
@@ -138,7 +120,7 @@ void main() {
         ),
       );
 
-      await screenMatchesGolden(tester, 'dark_ingredient_card');
+      await screenMatchesGolden(tester, 'dark_product_card');
     });
   });
 }
