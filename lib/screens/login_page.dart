@@ -19,12 +19,12 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F8E9), // Светло-зеленый фон (Material Green 50)
+      backgroundColor: const Color(0xFFF1F8E9), // Светло-зеленый фон
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 350), // Ограничиваем ширину для красоты
+            constraints: const BoxConstraints(maxWidth: 350),
             child: LoginForm(
               onLogIn: onLogIn,
               onSignUp: onSignUp,
@@ -50,7 +50,7 @@ class LoginForm extends StatefulWidget {
   State<LoginForm> createState() => _LoginFormState();
 }
 
-class _LoginFormState extends State<LoginForm> {
+class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -96,13 +96,14 @@ class _LoginFormState extends State<LoginForm> {
           onSubmitted: (_) => _handleLogin(),
         ),
         const SizedBox(height: 32),
-        _buildActionButton(
+        // Использование анимированной кнопки
+        ScaleAnimatedButton(
           text: 'Login',
           onPressed: _handleLogin,
           isPrimary: true,
         ),
         const SizedBox(height: 12),
-        _buildActionButton(
+        ScaleAnimatedButton(
           text: 'Sign Up',
           onPressed: () => widget.onSignUp(
             Credentials(_emailController.text, _passwordController.text),
@@ -150,27 +151,76 @@ class _LoginFormState extends State<LoginForm> {
       ),
     );
   }
+}
 
-  Widget _buildActionButton({
-    required String text,
-    required VoidCallback onPressed,
-    required bool isPrimary,
-  }) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isPrimary ? Colors.green.shade600 : Colors.white,
-        foregroundColor: isPrimary ? Colors.white : Colors.green.shade700,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        elevation: isPrimary ? 2 : 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.0),
-          side: isPrimary ? BorderSide.none : BorderSide(color: Colors.green.shade100),
+// Новый виджет для анимации масштабирования при нажатии
+class ScaleAnimatedButton extends StatefulWidget {
+  final String text;
+  final VoidCallback onPressed;
+  final bool isPrimary;
+
+  const ScaleAnimatedButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    required this.isPrimary,
+  });
+
+  @override
+  State<ScaleAnimatedButton> createState() => _ScaleAnimatedButtonState();
+}
+
+class _ScaleAnimatedButtonState extends State<ScaleAnimatedButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) {
+        _controller.reverse();
+        widget.onPressed();
+      },
+      onTapCancel: () => _controller.reverse(),
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: ElevatedButton(
+          onPressed: null, // Отключаем стандартный обработчик, так как используем GestureDetector
+          style: ElevatedButton.styleFrom(
+            disabledBackgroundColor: widget.isPrimary ? Colors.green.shade600 : Colors.white,
+            disabledForegroundColor: widget.isPrimary ? Colors.white : Colors.green.shade700,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            elevation: widget.isPrimary ? 2 : 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+              side: widget.isPrimary ? BorderSide.none : BorderSide(color: Colors.green.shade100),
+            ),
+          ),
+          child: Text(
+            widget.text,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
         ),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
     );
   }

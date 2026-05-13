@@ -1,3 +1,5 @@
+import 'dart:io' show exit;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -61,11 +63,9 @@ class _HomeState extends ConsumerState<Home> {
   @override
   Widget build(BuildContext context) {
     final userDao = ref.watch(userDaoProvider);
+    final platform = Theme.of(context).platform;
     
-    // Получаем актуальные данные пользователя
     final String userEmail = userDao.email() ?? 'Guest@fitherb.com';
-    
-    // Сначала пробуем взять displayName, если его нет - часть email
     final String userName = userDao.displayName() ?? (userEmail.contains('@') 
         ? userEmail.split('@')[0] 
         : userEmail);
@@ -92,6 +92,7 @@ class _HomeState extends ConsumerState<Home> {
 
     return Scaffold(
       appBar: AppBar(
+        title: const Text('FitHerb', style: TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0.0,
         backgroundColor: Theme.of(context).colorScheme.surface,
         actions: [
@@ -107,6 +108,14 @@ class _HomeState extends ConsumerState<Home> {
                 context.go('/login');
               },
               icon: const Icon(Icons.logout),
+              tooltip: 'Logout',
+            ),
+          // Кнопка выхода специально для Windows (Chapter Final / Windows Desktop)
+          if (!kIsWeb && platform == TargetPlatform.windows)
+            IconButton(
+              onPressed: () => exit(0),
+              icon: const Icon(Icons.power_settings_new, color: Colors.redAccent),
+              tooltip: 'Quit App',
             ),
         ],
       ),

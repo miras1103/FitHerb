@@ -110,7 +110,6 @@ class _RestaurantPageState extends ConsumerState<RestaurantPage> {
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            // Поле ввода отзыва
             Row(
               children: [
                 Expanded(
@@ -134,7 +133,6 @@ class _RestaurantPageState extends ConsumerState<RestaurantPage> {
               ],
             ),
             const SizedBox(height: 16),
-            // Список отзывов из Firebase
             reviewsAsyncValue.when(
               data: (reviews) {
                 if (reviews.isEmpty) {
@@ -187,20 +185,28 @@ class _RestaurantPageState extends ConsumerState<RestaurantPage> {
             padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 64.0),
             child: Stack(
               children: [
-                Container(
-                  margin: const EdgeInsets.only(bottom: 30.0),
-                  decoration: BoxDecoration(
-                      color: Colors.grey,
+                // УЛУЧШЕННЫЙ HERO: Теперь виджеты совпадают по типу с карточкой списка
+                Hero(
+                  tag: 'restaurant-image-${widget.restaurant.id}',
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 30.0),
+                    child: ClipRRect(
                       borderRadius: BorderRadius.circular(16.0),
-                      image: DecorationImage(
-                          image: AssetImage(widget.restaurant.imageUrl),
-                          fit: BoxFit.cover)),
+                      child: Image.asset(
+                        widget.restaurant.imageUrl,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                    ),
+                  ),
                 ),
                 const Positioned(
                   bottom: 0.0,
                   left: 16.0,
                   child: CircleAvatar(
                     radius: 30,
+                    backgroundColor: Colors.green,
                     child: Icon(Icons.store, color: Colors.white),
                   ),
                 ),

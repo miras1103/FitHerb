@@ -161,6 +161,63 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     );
   }
 
+  // Упрощенная анимация успеха без внешних зависимостей (Built-in Flutter Animation)
+  void _showSuccessAnimation(Order order) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: TweenAnimationBuilder<double>(
+          duration: const Duration(milliseconds: 600),
+          tween: Tween(begin: 0.0, end: 1.0),
+          curve: Curves.elasticOut,
+          builder: (context, value, child) {
+            return Transform.scale(
+              scale: value,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 150,
+                    height: 150,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                      size: 100,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Order Placed!',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      if (mounted) {
+        Navigator.of(context).pop();
+        widget.cartManager.resetCart();
+        widget.onSubmit(order);
+      }
+    });
+  }
+
   Widget _buildSubmitButton() {
     return ElevatedButton(
       onPressed: widget.cartManager.isEmpty
@@ -179,11 +236,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                   name: name,
                   items: items);
 
-              // Сохраняем заказ в Firebase
               await ref.read(orderDaoProvider).saveOrder(order);
-
-              widget.cartManager.resetCart();
-              widget.onSubmit(order);
+              _showSuccessAnimation(order);
             },
       child: Padding(
         padding: const EdgeInsets.all(16.0),

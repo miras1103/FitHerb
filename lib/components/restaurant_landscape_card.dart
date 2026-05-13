@@ -34,12 +34,16 @@ class RestaurantLandscapeCard extends ConsumerWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.asset(
-                      restaurant.imageUrl, 
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        color: Colors.grey[200],
-                        child: const Icon(Icons.broken_image, size: 50),
+                    // ДОБАВЛЕНО: Hero animation для плавного перехода изображения
+                    Hero(
+                      tag: 'restaurant-image-${restaurant.id}',
+                      child: Image.asset(
+                        restaurant.imageUrl, 
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: Colors.grey[200],
+                          child: const Icon(Icons.broken_image, size: 50),
+                        ),
                       ),
                     ),
                     Positioned(

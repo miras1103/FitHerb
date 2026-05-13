@@ -49,7 +49,7 @@ This project serves as a submission for the "Cross-platform mobile development" 
 *   Developed a global real-time chat system using **Cloud Firestore** collections and configured **Security Rules** to protect user data.
 
 ### Chapter 17: Introduction to Testing
-*   Established a unit testing suite using the **Arrange-Act-Assert (AAA)** pattern for core models (`Ingredient`, `Recipe`).
+*   Established a unit testing suite using the **Arrange-Act-Assert (AAA)** pattern for core models (`ProductReview`, `Recipe`).
 *   Utilized **Mockito** to create mock dependencies, enabling isolated testing of repositories without requiring a live database.
 
 ### Chapter 18: Widget Testing
@@ -58,7 +58,7 @@ This project serves as a submission for the "Cross-platform mobile development" 
 
 ---
 
-## Final Endterm Features: Firebase Cloud Integration
+## Endterm Features: Firebase Cloud Integration
 
 **Feature 1: Firebase Firestore Favorites**
 *   **Implementation**: Migrated the local bookmarking system to **Cloud Firestore**.
@@ -80,15 +80,27 @@ This project serves as a submission for the "Cross-platform mobile development" 
 *   **Profile Analytics**: Added a visual stat bar showing **Total Orders** and **Favorites Count** for a more engaging user experience.
 *   **Reactive Profile Header**: Implemented a premium profile header with a "Verified Member" badge and instant cloud synchronization via `StreamBuilder`.
 
-**Feature 5: Platform-Specific Branding (Chapter 19)**
+**Platform-Specific Branding (Chapter 19)**
 *   **Unified Brand Identity**: Synchronized the "FitHerb" name across Android, iOS, Windows, and Web platforms.
 *   **Custom App Icons**: Configured automated icon generation for all device resolutions using a custom wellness logo.
-*   **Launch Screen Optimization**: Optimized the launch experience to ensure professional transitions during app initialization.
+*   **Windows Desktop Optimization**: Added a native "Quit App" button for the Windows platform and fixed C++ compilation issues.
 *   **Icon Verification (Paths)**:
     *   **Web**: Located in `web/favicon.png` and `web/icons/`.
     *   **Android**: Generated in `android/app/src/main/res/mipmap-*/ic_launcher.png`.
     *   **iOS**: Managed via Asset Catalog in `ios/Runner/Assets.xcassets/AppIcon.appiconset/`.
     *   **Windows**: Generated in `windows/runner/resources/app_icon.ico`.
+
+---
+
+## Final:
+
+To enhance the user experience for the final submission, the following animation types were implemented:
+
+*   **Hero Animation**: Implemented seamless image transitions from the Vitamin list to the Details page, enhancing visual continuity.
+*   **Button Scale Animation**: Created a custom `ScaleAnimatedButton` for the Login/Signup screens, providing tactile feedback on user interaction.
+*   **Lottie Animation**: Integrated a high-quality professional loading animation on the Explore screen to replace standard progress indicators.
+*   **Slide & Fade Transitions**: Developed staggered entry animations for home screen sections, making the UI feel dynamic and alive.
+*   **Built-in Success Feedback**: Developed an animated "Elastic-Scale" confirmation dialog for successful order submissions.
 
 ---
 
@@ -107,6 +119,7 @@ This project serves as a submission for the "Cross-platform mobile development" 
 *   [Drift](https://drift.simonbinder.eu) - Local SQLite Database
 *   [Chopper](https://pub.dev/packages/chopper) - Networking layer
 *   [Freezed](https://pub.dev/packages/freezed) - Immutable modeling
+*   [Lottie](https://pub.dev/packages/lottie) - Vector animations
 
 ---
 
@@ -118,7 +131,7 @@ This project serves as a submission for the "Cross-platform mobile development" 
     ```
 2.  **Generate App Icons**: To update icons for all platforms after adding `assets/app_icon.png`:
     ```bash
-    flutter pub run flutter_launcher_icons
+    dart run flutter_launcher_icons
     ```
 3.  **Run Tests**:
     ```bash

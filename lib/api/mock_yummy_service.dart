@@ -14,6 +14,9 @@ class ExploreData {
 class MockYummyService {
   // Batch request that gets both today recipes and friend's feed
   Future<ExploreData> getExploreData() async {
+    // УВЕЛИЧИВАЕМ ЗАДЕРЖКУ ДО 1 СЕКУНД, чтобы ты точно увидел Lottie (Chapter Final)
+    await Future.delayed(const Duration(seconds: 1));
+    
     final restaurants = await _getRestaurants();
     final categories = await _getCategories();
     final friendPosts = await _getFriendFeed();
@@ -23,25 +26,16 @@ class MockYummyService {
 
   // Get sample food categories to display in ui
   Future<List<FoodCategory>> _getCategories() async {
-    // Simulate api request wait time
-    await Future.delayed(const Duration(milliseconds: 50));
-    // Return mock categories
     return categories;
   }
 
   // Get the friend posts to display in ui
   Future<List<Post>> _getFriendFeed() async {
-    // Simulate api request wait time
-    await Future.delayed(const Duration(milliseconds: 50));
-    // Return mock posts
     return posts;
   }
 
   // Get the restaurants to display in ui
   Future<List<Restaurants>> _getRestaurants() async {
-    // Simulate api request wait time
-    await Future.delayed(const Duration(milliseconds: 50));
-    // Return mock restaurants
     return restaurants;
   }
 }
