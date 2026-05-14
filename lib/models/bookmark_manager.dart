@@ -6,7 +6,9 @@ import 'youtube_video.dart';
 
 class BookmarkManager extends ChangeNotifier {
   final String? userId;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore? _customFirestore;
+  
+  FirebaseFirestore get _firestore => _customFirestore ?? FirebaseFirestore.instance;
   
   List<Recipe> _bookmarks = [];
   List<YoutubeVideo> _videoBookmarks = [];
@@ -19,12 +21,12 @@ class BookmarkManager extends ChangeNotifier {
   StreamSubscription? _bookmarksSubscription;
   StreamSubscription? _videosSubscription;
 
-  BookmarkManager(this.userId) {
+  BookmarkManager(this.userId, {FirebaseFirestore? firestore}) 
+      : _customFirestore = firestore {
     if (userId != null) {
       _listenToFavorites();
     } else {
       _isLoading = false;
-      notifyListeners();
     }
   }
 
@@ -78,7 +80,6 @@ class BookmarkManager extends ChangeNotifier {
     super.dispose();
   }
 
-  // --- Витамины ---
   bool isFavorite(String brand, String title) {
     final targetId = generateSafeId(brand, title);
     return _bookmarks.any((r) => r.id == targetId);
@@ -114,7 +115,6 @@ class BookmarkManager extends ChangeNotifier {
     } catch (e) { _listenToFavorites(); }
   }
 
-  // --- Видео ---
   bool isVideoBookmarked(String id) {
     return _videoBookmarks.any((v) => v.id == id);
   }

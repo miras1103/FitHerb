@@ -18,7 +18,7 @@ This project serves as a submission for the "Cross-platform mobile development" 
 
 ---
 
-## Technical Implementation Journey (Chapters 10-18)
+## Technical Implementation Journey (Chapters 10-20)
 
 ### Chapter 10: Handling Shared Preferences
 *   Implemented local persistence for simple UI states using the `shared_preferences` plugin.
@@ -56,6 +56,28 @@ This project serves as a submission for the "Cross-platform mobile development" 
 *   Developed widget tests to verify UI structure and user interactions (tapping, checking) using the `WidgetTester` API and `pumpAndSettle`.
 *   Implemented **Visual Regression Testing (Golden Tests)** via `golden_toolkit` to ensure design consistency across themes.
 
+### Chapter 19: Platform-Specific Branding
+*   **Unified Brand Identity**: Synchronized the "FitHerb" name across Android, iOS, Windows, and Web platforms.
+*   **Custom App Icons**: Configured automated icon generation for all device resolutions using a custom wellness logo.
+*   **Windows Desktop Optimization**: Added a native "Quit App" button for the Windows platform and fixed C++ compilation issues.
+
+### Chapter 20: Build & Release an Android App
+*   **Step 1: Manifest Preparation**: Declared the `INTERNET` permission in `AndroidManifest.xml` as required by the book.
+*   **Step 2: Build.gradle Update**: Updated the application with a unique `applicationId` and configured release `signingConfigs`.
+*   **Step 3: Signing Key Creation**: Generated the `fitherb.jks` keystore file using the `keytool` command.
+*   **Step 4: Key Properties**: Created a `key.properties` file to securely reference the keystore and its passwords.
+*   **Step 5: Referencing the Key**: Updated the Gradle scripts to read from `key.properties` and sign the release build.
+*   **Build Status**: After following all the steps in the chapter, the final command `flutter build appbundle` was executed. However, it currently results in a build failure due to Gradle plugin incompatibilities in the project environment.
+
+---
+
+## Endterm Unit Testing
+*   **Digital Receipt Logic**: Verified the `Order` model formatting methods, ensuring correct display of delivery types, dates, and "ASAP" time logic for the final submission.
+*   **Firebase ID Sanitization**: Tested the `generateSafeId` function in `BookmarkManager` to guarantee consistent and safe document IDs across Firestore collections.
+*   **Cart Calculation Suite**: Validated the `CartManager` logic, ensuring accurate total price calculations and item quantity management.
+*   **Cloud Data Models**: Implemented unit tests for `User`, `ProductReview`, and `YoutubeVideo` models to ensure type-safe serialization for Firebase integration.
+*   **Stability Verification**: All Endterm business logic is covered by automated tests to prevent regressions during cloud synchronization.
+
 ---
 
 ## Endterm Features: Firebase Cloud Integration
@@ -79,16 +101,6 @@ This project serves as a submission for the "Cross-platform mobile development" 
 *   **Extended Attributes**: Users can customize their **First Name**, **Last Name**, and **Age**, stored securely in a dedicated Firestore `users` collection.
 *   **Profile Analytics**: Added a visual stat bar showing **Total Orders** and **Favorites Count** for a more engaging user experience.
 *   **Reactive Profile Header**: Implemented a premium profile header with a "Verified Member" badge and instant cloud synchronization via `StreamBuilder`.
-
-**Platform-Specific Branding (Chapter 19)**
-*   **Unified Brand Identity**: Synchronized the "FitHerb" name across Android, iOS, Windows, and Web platforms.
-*   **Custom App Icons**: Configured automated icon generation for all device resolutions using a custom wellness logo.
-*   **Windows Desktop Optimization**: Added a native "Quit App" button for the Windows platform and fixed C++ compilation issues.
-*   **Icon Verification (Paths)**:
-    *   **Web**: Located in `web/favicon.png` and `web/icons/`.
-    *   **Android**: Generated in `android/app/src/main/res/mipmap-*/ic_launcher.png`.
-    *   **iOS**: Managed via Asset Catalog in `ios/Runner/Assets.xcassets/AppIcon.appiconset/`.
-    *   **Windows**: Generated in `windows/runner/resources/app_icon.ico`.
 
 ---
 
