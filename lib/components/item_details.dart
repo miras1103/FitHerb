@@ -34,7 +34,6 @@ class _ItemDetailsState extends ConsumerState<ItemDetails> {
   void _sendReview() {
     if (_reviewController.text.trim().isEmpty) return;
     
-    // Используем название товара как ID для отзывов, так как у Item в этой модели нет уникального UUID
     final productId = widget.item.name; 
 
     ref.read(reviewDaoProvider).sendReview(
@@ -57,7 +56,6 @@ class _ItemDetailsState extends ConsumerState<ItemDetails> {
         .apply(displayColor: Theme.of(context).colorScheme.onSurface);
     final colorTheme = Theme.of(context).colorScheme;
     
-    // Слушаем отзывы именно к этому товару
     final reviewsAsyncValue = ref.watch(reviewListProvider(widget.item.name));
 
     return Container(
@@ -83,14 +81,12 @@ class _ItemDetailsState extends ConsumerState<ItemDetails> {
             
             const Divider(height: 32),
             
-            // СЕКЦИЯ ОТЗЫВОВ
             const Text(
               'Reviews',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             
-            // Поле ввода
             Row(
               children: [
                 Expanded(
@@ -114,7 +110,6 @@ class _ItemDetailsState extends ConsumerState<ItemDetails> {
             
             const SizedBox(height: 16),
             
-            // Список отзывов
             reviewsAsyncValue.when(
               data: (reviews) {
                 if (reviews.isEmpty) {
@@ -172,8 +167,9 @@ class _ItemDetailsState extends ConsumerState<ItemDetails> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8.0),
         image: DecorationImage(
-          image: NetworkImage(imageUrl),
-          fit: BoxFit.cover,
+          // ИСПРАВЛЕНО: Используем AssetImage вместо NetworkImage, так как это локальные ресурсы
+          image: AssetImage(imageUrl),
+          fit: BoxFit.contain, // Используем contain, чтобы картинка витамина не обрезалась
         ),
       ),
     );
